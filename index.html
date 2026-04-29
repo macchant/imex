@@ -36,24 +36,34 @@
     };
   </script>
   <style>
+    html { -webkit-text-size-adjust: 100%; }
     html, body { background: #0a0a0b; color: #e6e6ec; }
     body {
+      min-height: 100%;
+      overscroll-behavior-y: none;
+    }
+    /* Decorative ambient gradients — fixed via a dedicated layer to avoid the
+       iOS Safari `background-attachment: fixed` scroll bug. */
+    .bg-glow {
+      position: fixed; inset: 0; pointer-events: none; z-index: -2;
       background-image:
         radial-gradient(1200px 600px at 50% -10%, rgba(124,92,255,0.18), transparent 60%),
         radial-gradient(800px 500px at 100% 100%, rgba(255,92,208,0.10), transparent 60%);
-      background-attachment: fixed;
     }
-    .grain::before {
-      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: .04;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    }
+    /* Grid: ::before */
     .grid-bg::before {
-      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1;
       background-image:
         linear-gradient(rgba(124,92,255,0.05) 1px, transparent 1px),
         linear-gradient(90deg, rgba(124,92,255,0.05) 1px, transparent 1px);
       background-size: 64px 64px;
       mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+    }
+    /* Grain: ::after (so both grain + grid can coexist; previously they were both ::before and only one rendered) */
+    .grain::after {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1; opacity: .04;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     }
     .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #2e2e38; border-radius: 6px; }
@@ -81,7 +91,8 @@
   </style>
 </head>
 <body class="font-sans antialiased grid-bg grain">
-  <div class="relative z-10 max-w-7xl mx-auto px-6 py-6">
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="relative max-w-7xl mx-auto px-6 py-6">
 
     <!-- Header / Brand — editorial masthead -->
     <header class="mb-10">
